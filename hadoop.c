@@ -180,10 +180,8 @@ int main(int argc, char *argv[])
         {
         	recv_buffer[i] = data1[i];
         }
-        printf("%s\n",recv_buffer);
+        printf("Recieved: \n%s\n",recv_buffer);
         
-        
-		//char* output = map(recv_buffer,strlen(recv_buffer));	
         char* output = map(recv_buffer,counts[0]+1);	
 		
 		counts[0] = strlen(output);
@@ -200,22 +198,33 @@ int main(int argc, char *argv[])
 		}
 		
 		
-		char maparray[comsize][max];
+		char maparray[comsize][max+1];
 		for(int i=0; i<counts[0] ; i++)
 		{
 			maparray[0][i] = output[i];
 		}
-		
-		printf("%s\n",output);
+		maparray[0][counts[0]] = '\0';
+		printf("Output: \n%s\n",maparray[0]);
 		
 		
 		for(int i=1; i<comsize ; i++)
 		{
-			//MPI_Recv(maparray[i], counts[i], MPI_CHAR, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			//printf("%s\n",maparray[i]);
+			MPI_Recv(maparray[i], counts[i], MPI_CHAR, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			maparray[i][counts[i]] = '\0';
+			printf("Output: \n%s\n",maparray[i]);
 		}
 		
+		// call reduce on self data
 		
+		// send counts
+		
+		// send data 
+		
+		// recieve counts
+		
+		// recieve data
+		
+		// write to file
 		
     }
 	else
@@ -230,20 +239,35 @@ int main(int argc, char *argv[])
         
         
         //printf("Expected: %d \t Actual: %ld \n" , counts[rank] , strlen(recv_buffer));
-		printf("%s\n",recv_buffer);
+		printf("Recieved:\n%s\n",recv_buffer);
 		
 		
 		char* output = map(recv_buffer,counts[rank]+1);
 		int osize = strlen(output);
-		printf("%s\n",output);
+		
 		MPI_Send(&osize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-		//MPI_Send(output,osize,MPI_CHAR,0,1,MPI_COMM_WORLD);
+		MPI_Send(output,osize,MPI_CHAR,0,1,MPI_COMM_WORLD);
 		
+		// Reduce Function
 		
-			
+		// recieve count
+		
+		// recieve data
+		
+		// call redcue
+		
+		// send count
+		
+		// send actual data
+		
 		
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
+	
+	printf("Goodbye From %d\n",rank);
+	
+	
+
 	MPI_Finalize();
     return 0;
 }
